@@ -6,10 +6,28 @@
 
 from mlflow.store.artifact.models_artifact_repo import ModelsArtifactRepository
 import os
+import mlflow.pyfunc
+import mlflow
+mlflow.autolog(disable=True)
+from mlflow import MlflowClient
 
-model_name = "dbdemos_customer_churn"
-model_uri = f"models:/{model_name}/10"
-local_path = ModelsArtifactRepository(model_uri).download_artifacts("") # download model from remote registry
+try:
+    model_name = "dbdemos_churn_dbt_model"
+    model_uri = f"models:/{model_name}/Production"
+    local_path = ModelsArtifactRepository(model_uri).download_artifacts("") # download model from remote registry
+except:
+    print("Model doesn't exist, will create a dummy one for the demo. Please install dbdemos.install('lakehouse-retail-c360') to get a real model")
+    class dummyModel(mlflow.pyfunc.PythonModel):
+        def predict(self, context, model_input):
+            return model_input.apply(lambda x: 1)
+    model = dummyModel()
+    with mlflow.start_run(run_name="dummy_model_for_dbt") as mlflow_run:
+        m = mlflow.sklearn.log_model(model, "dummy_model")
+    model_registered = mlflow.register_model(f"runs:/{ mlflow_run.info.run_id }/dummy_model", model_name)
+    client = mlflow.tracking.MlflowClient()
+    client.transition_model_version_stage(model_name, model_registered.version, stage = "Production", archive_existing_versions=True)
+
+    local_path = ModelsArtifactRepository(model_uri).download_artifacts("")
 
 requirements_path = os.path.join(local_path, "requirements.txt")
 if not os.path.exists(requirements_path):
@@ -21,7 +39,7 @@ if not os.path.exists(requirements_path):
 
 # COMMAND ----------
 
-# MAGIC %pip install jinja2==3.0.3
+1 %pip install jinja2==3.0.3
 
 # COMMAND ----------
 
@@ -31,9 +49,7 @@ if not os.path.exists(requirements_path):
 # COMMAND ----------
 
 # redefining key variables here because %pip and %conda restarts the Python interpreter
-model_name = "dbdemos_customer_churn"
-model_uri = f"models:/{model_name}/Production"
-input_table_name = "field_eng_dbt_demo.dbt_c360.t3_gold_churn_features"
+input_table_name = "dbdemos.dbt_gold_churn_features"
 table = spark.table(input_table_name)
 
 # COMMAND ----------
