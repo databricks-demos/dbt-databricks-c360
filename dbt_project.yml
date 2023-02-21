@@ -1,9 +1,9 @@
-name: 'dbt_c360_demo'
+name: 'dbdemos_dbt_c360'
 
 config-version: 2
 version: '0.1'
 
-profile: 'dbt_c360_demo'
+profile: 'dbdemos_dbt_c360'
 
 model-paths: ["models"]
 seed-paths: ["seeds"]
@@ -20,7 +20,7 @@ clean-targets:
 require-dbt-version: [">=1.0.0", "<2.0.0"]
 
 models:
-  dbt_c360_demo:
+  dbdemos_dbt_c360:
       materialized: table
       staging:
         materialized: view

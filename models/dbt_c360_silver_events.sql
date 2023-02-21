@@ -10,4 +10,4 @@ select
   platform,
   action,
   url
-from field_eng_dbt_demo.dbt_c360.t1_bronze_events
+from dbdemos.dbt_c360_bronze_events

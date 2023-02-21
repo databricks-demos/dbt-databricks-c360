@@ -49,7 +49,7 @@ if not os.path.exists(requirements_path):
 # COMMAND ----------
 
 # redefining key variables here because %pip and %conda restarts the Python interpreter
-input_table_name = "dbdemos.dbt_gold_churn_features"
+input_table_name = "dbdemos.dbt_c360_gold_churn_features"
 table = spark.table(input_table_name)
 
 # COMMAND ----------
@@ -65,9 +65,9 @@ spark.udf.register("predict_churn", predict)
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC CREATE OR REPLACE TABLE t3_gold_churn_predictions
+# MAGIC CREATE OR REPLACE TABLE dbdemos.dbt_c360_gold_churn_predictions
 # MAGIC AS 
-# MAGIC SELECT predict_churn(struct(user_id, age_group, canal, country, gender, order_count, total_amount, total_item, platform, event_count, session_count, days_since_creation, days_since_last_activity, days_last_event)) as churn_prediction, * FROM field_eng_dbt_demo.dbt_c360.t3_gold_churn_features
+# MAGIC SELECT predict_churn(struct(user_id, age_group, canal, country, gender, order_count, total_amount, total_item, platform, event_count, session_count, days_since_creation, days_since_last_activity, days_last_event)) as churn_prediction, * FROM dbdemos.dbt_c360_gold_churn_features
 
 # COMMAND ----------
 
@@ -84,5 +84,5 @@ spark.udf.register("predict_churn", predict)
 # MAGIC   firstname,
 # MAGIC   lastname,
 # MAGIC   churn_prediction
-# MAGIC FROM t3_gold_churn_predictions
+# MAGIC FROM dbdemos.dbt_c360_gold_churn_predictions
 # MAGIC LIMIT 10;
