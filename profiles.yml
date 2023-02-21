@@ -1,0 +1,15 @@
+dbdemos_dbt_c360:
+  target: dev
+  outputs:
+    #run DBT locally from your IDEA and execute on a SQL warehouse (https://docs.getdbt.com/reference/warehouse-setups/databricks-setup)
+    #Make sure you have pip install dbt-databricks in your local env
+    #DBT_DATABRICKS_HOST=xxx.cloud.databricks.com  DBT_DATABRICKS_HTTP_PATH=/sql/1.0/warehouses/xxxx DBT_DATABRICKS_TOKEN=dapixxxx dbt run --profiles-dir ./
+    dev:
+      type: databricks
+      catalog: hive_metastore
+      schema: dbdemos
+      host: "{{ env_var('DBT_DATABRICKS_HOST') }}"
+      http_path: "{{ env_var('DBT_DATABRICKS_HTTP_PATH') }}" #SQL warehouse Connection details
+      token: "{{ env_var('DBT_DATABRICKS_TOKEN') }}" # Personal Access Token (PAT)
+
+

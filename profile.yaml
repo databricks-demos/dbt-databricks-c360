@@ -1,5 +1,0 @@
-dbdemos_dbt_c360:
-  target: dev
-  outputs:
-    dev:
-      schema: dbdemos
