@@ -85,3 +85,27 @@ spark.udf.register("predict_churn", predict)
 # MAGIC   churn_prediction
 # MAGIC FROM dbdemos.dbt_c360_gold_churn_predictions
 # MAGIC LIMIT 10;
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC 
+# MAGIC # Next step: Leverage inferences and automate actions to increase revenue
+# MAGIC 
+# MAGIC ## Automate action to reduce churn based on predictions
+# MAGIC 
+# MAGIC We now have an end 2 end data pipeline analizing and predicting churn. We can now easily trigger actions to reduce the churn based on our business:
+# MAGIC 
+# MAGIC - Send targeting email campaign to the customer the most likely to churn
+# MAGIC - Phone campaign to discuss with our customers and understand what's going
+# MAGIC - Understand what's wrong with our line of product and fixing it
+# MAGIC 
+# MAGIC These actions are out of the scope of this demo and simply leverage the Churn prediction field from our ML model.
+# MAGIC 
+# MAGIC ## Track churn impact over the next month and campaign impact
+# MAGIC 
+# MAGIC Of course, this churn prediction can be re-used in our dashboard to analyse future churn and measure churn reduction. 
+# MAGIC 
+# MAGIC install the `lakehouse-retail-c360` demo for more example.
+# MAGIC 
+# MAGIC <img width="800px" src="https://raw.githubusercontent.com/QuentinAmbard/databricks-demo/main/retail/resources/images/lakehouse-retail/lakehouse-retail-churn-dbsql-prediction-dashboard.png">
