@@ -68,7 +68,10 @@ This demo is broken up into the following building blocks. View the sub-folders 
 
 
 
-
+### Feedback
+---
+Got comments and feedback? <br/>
+Feel free to reach out to ```mendelsohn.chan@databricks.com``` or ```quentin.ambard.databricks.com```
 
 
 
