@@ -1,6 +1,12 @@
 # Databricks notebook source
 # MAGIC %md
-# MAGIC ## 3.1: Load the model from MlFlow
+# MAGIC ## 3.1: Load the model from MlFlow & predict Churn
+# MAGIC 
+# MAGIC The last step of our workflow will load the model our DS team created. 
+# MAGIC 
+# MAGIC Our final gold table `dbt_c360_gold_churn_predictions` containing the model prediction will be available for us to start building a BI Analysis and take actions to reduce churn.
+# MAGIC 
+# MAGIC *Note that the churn model creation is outside of this demo scope - we'll create a dummy one. You can install `dbdemos.install('lakehouse-retail-c360')` to get a real model.*
 
 # COMMAND ----------
 
@@ -10,16 +16,18 @@ import mlflow.pyfunc
 import mlflow
 mlflow.autolog(disable=True)
 from mlflow import MlflowClient
+import random
 
 try:
     model_name = "dbdemos_churn_dbt_model"
     model_uri = f"models:/{model_name}/Production"
     local_path = ModelsArtifactRepository(model_uri).download_artifacts("") # download model from remote registry
-except:
-    print("Model doesn't exist, will create a dummy one for the demo. Please install dbdemos.install('lakehouse-retail-c360') to get a real model")
+except Exception as e:
+    print("Model doesn't exist "+str(e)+", will create a dummy one for the demo. Please install dbdemos.install('lakehouse-retail-c360') to get a real model")
     class dummyModel(mlflow.pyfunc.PythonModel):
-        def predict(self, context, model_input):
-            return model_input.apply(lambda x: 1)
+        def predict(self, model_input):
+            #Return a random value for the churn
+            return model_input['user_id'].map(lambda x: random.randint(0, 1))
     model = dummyModel()
     with mlflow.start_run(run_name="dummy_model_for_dbt") as mlflow_run:
         m = mlflow.sklearn.log_model(model, "dummy_model")
@@ -28,6 +36,7 @@ except:
     client.transition_model_version_stage(model_name, model_registered.version, stage = "Production", archive_existing_versions=True)
 
     local_path = ModelsArtifactRepository(model_uri).download_artifacts("")
+
 
 requirements_path = os.path.join(local_path, "requirements.txt")
 if not os.path.exists(requirements_path):
@@ -44,15 +53,9 @@ if not os.path.exists(requirements_path):
 
 # COMMAND ----------
 
-# redefining key variables here because %pip and %conda restarts the Python interpreter
-input_table_name = "dbdemos.dbt_c360_gold_churn_features"
-table = spark.table(input_table_name)
-
-# COMMAND ----------
-
 import mlflow
 from pyspark.sql.functions import struct
-predict = mlflow.pyfunc.spark_udf(spark, model_uri, result_type="double", env_manager="conda")
+predict = mlflow.pyfunc.spark_udf(spark, f"models:/dbdemos_churn_dbt_model/Production", result_type="double") #, env_manager="conda"
 
 # COMMAND ----------
 

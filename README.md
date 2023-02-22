@@ -1,25 +1,41 @@
 # dbt on Databricks demo
 ---
 
-## Databricks setup
-
 This content demo how Databricks can run dbt pipelines, integrated with Databricks Workflow.
 
+This demo replicate the Delta Live Table (DLT) pipeline in the lakehouse c360 databricks demo available in `dbdemos.install('lakehouse-retail-c360')`
 
-This demo is part of [dbdemos.ai](http://www.dbdemos.ai) dbt bundle. <br/>
-To install the full demo with the worfklow properly setup, you can run `dbdemos.install('dbt-on-databricks')`
+## Running dbt on Databricks
 
-This demo replicate the DLT pipeline in the lakehouse c360 databricks demo available in `dbdemos.install('lakehouse-retail-c360')`
+
+This demo is part of [dbdemos.ai](http://www.dbdemos.ai) dbt bundle. <br/> Do not clone this repo directly. 
+
+Instead, to install the full demo with the worfklow and repo, you can run:
+
+```
+%pip install dbdemos
+dbdemos.install('dbt-on-databricks')
+```
+
+The best way to run production-grade dbt pipeline on Databricks is as a [Databricks Workflow dbt Task](https://docs.databricks.com/workflows/jobs/how-to-use-dbt-in-workflows.html).
 
 Here is an overiew of the workflow created by dbdemos:
 
-<img width="800px" src="https://raw.githubusercontent.com/databricks-demos/dbdemos-resources/main/images/partners/dbt/dbt-databricks-workflow.png" />
+<img width="800px" src="https://raw.githubusercontent.com/databricks-demos/dbdemos-resources/main/images/partners/dbt/dbt-databricks-workflow.png" /><br/>
+Task 02 is a dbt task running on Databricks workflow directly.
 
 
-## How dbt + Databricks is working
+## Running dbt + databricks locally
+
+```
+pip install dbt-databricks
+export DBT_DATABRICKS_HOST=xxxx.cloud.databricks.com  
+export DBT_DATABRICKS_HTTP_PATH=/sql/1.0/warehouses/xxx 
+export DBT_DATABRICKS_TOKEN=dapixxxxx 
+dbt run
+```
 
 ### Project structure
-
 
 
 
@@ -56,7 +72,7 @@ This demo is broken up into the following building blocks. View the sub-folders 
    * The model is loaded as a SQL function, then applied to the ```dbt_c360_gold_churn_features``` that will be materialized at the end of the second dbt task in our workflow
 
 - ```seeds```
-    * This is an optional folder used to store sample, adhoc CSV files to be loaded into the Lakehouse
+    * This is an optional folder used to store sample, adhoc CSV files to be loaded into the Lakehouse. The seeds aren't used in the default setup (we use the ingestion with the autoloader instead)
 
 
 
