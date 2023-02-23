@@ -44,7 +44,7 @@ This demo is broken up into the following building blocks. View the sub-folders 
 
 - ```01-ingest-autoloader``` <br/>
 
-    * This contains the notebook to ingest raw data incrementally into our Lakehouse 
+    * This contains the notebook to ingest raw data incrementally into our Lakehouse (not a dbt task)
     * The goal is to ingest the new data once it is uploaded into cloud storage, so our dbt pipeline can do the transformations 
     * It is worth noting that while dbt has a functionality called ```seed``` that allows files to be loaded, it is currently limited to ```CSV``` files 
     
@@ -68,7 +68,7 @@ This demo is broken up into the following building blocks. View the sub-folders 
     
 
 - ```03-ml-predict-churn```
-   * This contains the notebook to load our churn prediction ML model from MLFlow after the dbt transformations are complete
+   * This contains the notebook to load our churn prediction ML model from MLFlow after the dbt transformations are complete (not a dbt task)
    * The model is loaded as a SQL function, then applied to the ```dbt_c360_gold_churn_features``` that will be materialized at the end of the second dbt task in our workflow
 
 - ```seeds```

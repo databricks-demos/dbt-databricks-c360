@@ -3,7 +3,8 @@ dbdemos_dbt_c360:
   outputs:
     #run DBT locally from your IDEA and execute on a SQL warehouse (https://docs.getdbt.com/reference/warehouse-setups/databricks-setup)
     #Make sure you have pip install dbt-databricks in your local env
-    #DBT_DATABRICKS_HOST=xxx.cloud.databricks.com  DBT_DATABRICKS_HTTP_PATH=/sql/1.0/warehouses/xxxx DBT_DATABRICKS_TOKEN=dapixxxx dbt run --profiles-dir ./
+    #Run the project locally with:
+    #DBT_DATABRICKS_HOST=xxx.cloud.databricks.com  DBT_DATABRICKS_HTTP_PATH=/sql/1.0/warehouses/xxxx DBT_DATABRICKS_TOKEN=dapixxxx dbt run
     dev:
       type: databricks
       catalog: hive_metastore
