@@ -17,6 +17,10 @@ def is_folder_empty(folder):
 if reset_all_data or is_folder_empty(folder+"/orders") or is_folder_empty(folder+"/users") or is_folder_empty(folder+"/events"):
   #data generation on another notebook to avoid installing libraries (takes a few seconds to setup pip env)
   print(f"Generating data under {folder} , please wait a few sec...")
-  dbutils.notebook.run("./01-load-data", 600)
+  path = dbutils.notebook.entry_point.getDbutils().notebook().getContext().notebookPath().get()
+  parent_count = path[path.rfind("01-ingest-autoloader"):].count('/') - 1
+  prefix = "./" if parent_count == 0 else parent_count*"../"
+  prefix = f'{prefix}_resources/'
+  dbutils.notebook.run(prefix+"01-load-data", 600)
 else:
   print("data already existing. Run with reset_all_data=true to force a data cleanup for your local demo.")
