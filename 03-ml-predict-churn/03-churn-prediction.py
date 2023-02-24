@@ -48,6 +48,10 @@ if not os.path.exists(requirements_path):
 
 # COMMAND ----------
 
+# MAGIC %pip install jinja2==3.0.3
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ## 3.2: Load the model as a SQL Function
 
