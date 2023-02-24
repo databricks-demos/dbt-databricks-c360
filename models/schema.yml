@@ -11,6 +11,7 @@ models:
         tests:
           - accepted_values:
               values: [1, 0]
+              
   - name: dbt_c360_silver_orders
     columns:
       - name: order_id
@@ -19,7 +20,7 @@ models:
       - name: user_id
         tests:
           - relationships:
-              to: ref('silver_users')
+              to: ref('dbt_c360_silver_users')
               field: user_id
               
               
