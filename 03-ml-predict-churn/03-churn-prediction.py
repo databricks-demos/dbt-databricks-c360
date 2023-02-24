@@ -10,13 +10,28 @@
 
 # COMMAND ----------
 
+# DBTITLE 1,Model creation steps (model creation is usually done directly with AutoML)
 from mlflow.store.artifact.models_artifact_repo import ModelsArtifactRepository
 import os
 import mlflow.pyfunc
 import mlflow
-mlflow.autolog(disable=True)
 from mlflow import MlflowClient
 import random
+mlflow.autolog(disable=True)
+#force the experiment to the field demos one. Required to launch as a batch
+def init_experiment_for_batch(path, experiment_name):
+  #You can programatically get a PAT token with the following
+  pat_token = dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
+  url = dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiUrl().get()
+  import requests
+  requests.post(f"{url}/api/2.0/workspace/mkdirs", headers = {"Accept": "application/json", "Authorization": f"Bearer {pat_token}"}, json={ "path": path})
+  xp = f"{path}/{experiment_name}"
+  print(f"Using common experiment under {xp}")
+  mlflow.set_experiment(xp)
+  
+
+init_experiment_for_batch("/Shared/dbdemos/dbt", "03-churn-prediction")
+
 
 try:
     model_name = "dbdemos_churn_dbt_model"
