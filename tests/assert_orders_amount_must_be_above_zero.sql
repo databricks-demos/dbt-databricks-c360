@@ -4,6 +4,6 @@
 select 
  user_id,
  sum(amount) as total_amount 
-from {{ref('dbt_c360_silver_orders')}}
+from {{ref('t2_silver_orders')}}
 group by 1 
 having not (total_amount >= 0)

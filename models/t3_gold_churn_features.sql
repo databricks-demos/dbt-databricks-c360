@@ -11,7 +11,7 @@ with
             sum(amount) as total_amount, 
             sum(item_count) as total_item, 
              max(creation_date) as last_transaction
-      from {{ref('dbt_c360_silver_orders')}} 
+      from {{ref('t2_silver_orders')}} 
       group by user_id
     ),  
     -- block 2 -- 
@@ -22,7 +22,7 @@ with
              count(*) as event_count, 
              count(distinct session_id) as session_count, 
              max(to_timestamp(date, "MM-dd-yyyy HH:mm:ss")) as last_event
-       from {{ref('dbt_c360_silver_events')}} 
+       from {{ref('t2_silver_events')}} 
        group by user_id
     )
 
@@ -30,7 +30,7 @@ select *,
        datediff(now(), creation_date) as days_since_creation,
        datediff(now(), last_activity_date) as days_since_last_activity,
        datediff(now(), last_event) as days_last_event
-from {{ref('dbt_c360_silver_users')}} 
+from {{ref('t2_silver_users')}} 
 inner join churn_orders_stats using (user_id)
 inner join churn_app_events_stats using (user_id)
 

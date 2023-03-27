@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: dbt_c360_silver_users
+  - name: t2_silver_users
     columns:
       - name: user_id
         tests:
@@ -12,7 +12,7 @@ models:
           - accepted_values:
               values: [1, 0]
               
-  - name: dbt_c360_silver_orders
+  - name: t2_silver_orders
     columns:
       - name: order_id
         tests:
@@ -20,7 +20,7 @@ models:
       - name: user_id
         tests:
           - relationships:
-              to: ref('dbt_c360_silver_users')
+              to: ref('t2_silver_users')
               field: user_id
               
               

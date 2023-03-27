@@ -1,5 +1,7 @@
 {{
- config(materialized = 'table', file_format = 'delta')
+ config(materialized = 'table', 
+        file_format = 'delta'
+       )
 }}
 
 -- notes: user data cleaned and anonymized for analysis -- 
@@ -16,4 +18,4 @@ select
   cast(gender as int),
   cast(age_group as int), 
   cast(churn as int) as churn
-from dbdemos.dbt_c360_bronze_users
+from mchan_dbt_demo_db.t1_bronze_users

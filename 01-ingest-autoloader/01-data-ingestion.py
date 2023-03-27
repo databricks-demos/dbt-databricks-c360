@@ -18,7 +18,7 @@
 
 # COMMAND ----------
 
-# MAGIC %run ./_resources/00-setup $reset_all_data=false
+# MAGIC %run ./_resources/00-setup $reset_all_data=true
 
 # COMMAND ----------
 
@@ -37,9 +37,14 @@ def incrementally_ingest_folder(path, format, table):
               .outputMode("append")
               .toTable(table))
 
-spark.sql('create database if not exists dbdemos;')
-incrementally_ingest_folder('/dbdemos/dbt-retail/users', 'json', 'dbdemos.dbt_c360_bronze_users')
-incrementally_ingest_folder('/dbdemos/dbt-retail/orders', 'json', 'dbdemos.dbt_c360_bronze_orders')
-incrementally_ingest_folder('/dbdemos/dbt-retail/events', 'csv', 'dbdemos.dbt_c360_bronze_events')
+spark.sql('create database if not exists mchan_dbt_demo_db;')
+incrementally_ingest_folder('/dbdemos/dbt-retail/users', 'json', 'mchan_dbt_demo_db.t1_bronze_users')
+incrementally_ingest_folder('/dbdemos/dbt-retail/orders', 'json', 'mchan_dbt_demo_db.t1_bronze_orders')
+incrementally_ingest_folder('/dbdemos/dbt-retail/events', 'csv', 'mchan_dbt_demo_db.t1_bronze_events')
 
 print('Congrats, our new data has been consumed and incrementally added to our bronze tables')
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### END OF STEP 1: INGESTION 

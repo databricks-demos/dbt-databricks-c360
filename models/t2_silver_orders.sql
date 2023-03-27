@@ -1,5 +1,6 @@
 {{
- config(materialized = 'table', file_format = 'delta')
+ config(materialized = 'table', 
+        file_format = 'delta')
 }}
 
 --notes: order data cleaned and anonymized for analysis -- 
@@ -9,4 +10,4 @@ select
   user_id,
   cast(item_count as int),
   to_timestamp(transaction_date, "MM-dd-yyyy HH:mm:ss") as creation_date
-from dbdemos.dbt_c360_bronze_orders
+from mchan_dbt_demo_db.t1_bronze_users

@@ -24,3 +24,23 @@ models:
       materialized: table
       staging:
         materialized: view
+        
+  dbt_artifacts:
+    +database: mchan_dbt_monitoring_db
+    +schema: mchan_dbt_monitoring_db
+    staging:
+     +database: mchan_dbt_monitoring_db
+
+
+
+
+
+
+
+
+
+
+
+
+
+
