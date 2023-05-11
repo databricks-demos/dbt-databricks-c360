@@ -8,9 +8,8 @@ dbdemos_dbt_c360:
     local:
       type: databricks
       catalog: hive_metastore
-      schema: mchan_dbt_demo
-      host: e2-demo-field-eng.cloud.databricks.com
-      http_path: /sql/1.0/warehouses/ead10bf07050390f
-      token: dapif217f11245fc11071d024ae561ea7e29
-
+      schema: dbdemos
+      host: "{{ env_var('DBT_DATABRICKS_HOST') }}"
+      http_path: "{{ env_var('DBT_DATABRICKS_HTTP_PATH') }}" #SQL warehouse Connection details
+      token: "{{ env_var('DBT_DATABRICKS_TOKEN') }}" # Personal Access Token (PAT)
 
