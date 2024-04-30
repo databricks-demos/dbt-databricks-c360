@@ -3,7 +3,7 @@
 
 This content demo how Databricks can run dbt pipelines, integrated with Databricks Workflow.
 
-This demo replicate the Delta Live Table (DLT) pipeline in the lakehouse c360 databricks demo available in `dbdemos.install('lakehouse-retail-c360')`
+This demo replicate the Delta Live Tables (DLT) pipeline in the lakehouse c360 databricks demo available in `dbdemos.install('lakehouse-retail-c360')`
 
 ## Running dbt on Databricks
 
@@ -87,7 +87,7 @@ This demo is broken up into the following building blocks. View the sub-folders 
 ### Feedback
 ---
 Got comments and feedback? <br/>
-Feel free to reach out to ```mendelsohn.chan@databricks.com``` or ```quentin.ambard.databricks.com```
+Feel free to reach out to ```shabbir.khanbhai@databricks.com``` or ```quentin.ambard.databricks.com```
 
 
 
