@@ -5,4 +5,4 @@
 }}
 select
     *
-from stream read_files('/dbdemos/dbt-retail/events', format=>'csv')
+from stream read_files('/Volumes/dbdemos/dbt-retail/events', format=>'csv')
