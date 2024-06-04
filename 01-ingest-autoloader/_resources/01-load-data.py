@@ -21,7 +21,7 @@ def cleanup_folder(path):
 
 # COMMAND ----------
 
-folder = "/dbdemos/dbt-retail"
+folder = "/Volumes/dbdemos/dbt-retail"
 if reset_all_data:
   print("resetting all data...")
   if folder.count('/') > 2:
