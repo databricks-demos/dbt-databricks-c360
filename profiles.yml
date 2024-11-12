@@ -7,8 +7,8 @@ dbdemos_dbt_c360:
     #DBT_DATABRICKS_HOST=xxx.cloud.databricks.com  DBT_DATABRICKS_HTTP_PATH=/sql/1.0/warehouses/xxxx DBT_DATABRICKS_TOKEN=dapixxxx dbt run
     local:
       type: databricks
-      catalog: hive_metastore
-      schema: dbdemos
+      catalog: "{{ env_var('catalog') }}"
+      schema: "{{ env_var('schema') }}"
       host: "{{ env_var('DBT_DATABRICKS_HOST') }}"
       http_path: "{{ env_var('DBT_DATABRICKS_HTTP_PATH') }}" #SQL warehouse Connection details
       token: "{{ env_var('DBT_DATABRICKS_TOKEN') }}" # Personal Access Token (PAT)
