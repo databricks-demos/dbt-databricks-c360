@@ -9,4 +9,4 @@ select
   user_id,
   cast(item_count as int),
   to_timestamp(transaction_date, "MM-dd-yyyy HH:mm:ss") as creation_date
-from dbdemos.dbt_c360_bronze_orders
+from {{ ref('dbt_c360_bronze_orders') }}

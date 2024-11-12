@@ -33,8 +33,3 @@ select *,
 from {{ref('dbt_c360_silver_users')}} 
 inner join churn_orders_stats using (user_id)
 inner join churn_app_events_stats using (user_id)
-
-         
-         
-         
-         
