@@ -9,7 +9,7 @@
 
 # COMMAND ----------
 
-#dbutils.widgets.text("raw_data_location", "/demos/retail/churn/", "Raw data location (stating dir)")
+dbutils.widgets.text("folder", "/demos/retail/churn/", "Raw data location (stating dir)")
 dbutils.widgets.dropdown("reset_all_data", "false", ["true", "false"], "Reset all data")
 reset_all_data = dbutils.widgets.get("reset_all_data") == "true"
 
