@@ -14,7 +14,7 @@ spark.sql(f'CREATE VOLUME IF NOT EXISTS `{catalog}`.`{schema}`.`raw_data`')
 
 # COMMAND ----------
 
-folder = "Volumes/{catalog}/{schema}/raw_data"
+folder = f"Volumes/{catalog}/{schema}/raw_data"
 
 #Return true if the folder is empty or does not exists
 def is_folder_empty(folder):
