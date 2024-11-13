@@ -11,6 +11,7 @@ schema = dbutils.widgets.get("schema")
 spark.sql(f'CREATE CATALOG IF NOT EXISTS `{catalog}`')
 spark.sql(f'CREATE SCHEMA IF NOT EXISTS `{catalog}`.`{schema}`')
 spark.sql(f'CREATE VOLUME IF NOT EXISTS `{catalog}`.`{schema}`.`raw_data`')
+print(f'Using Volume `{catalog}`.`{schema}`.`raw_data`')
 
 # COMMAND ----------
 
@@ -101,8 +102,8 @@ with ThreadPoolExecutor(max_workers=3) as executor:
     for n in executor.map(gen_data, range(1, 24)):
         df_customers = df_customers.union(n)
 
-df_customers = df_customers.cache()
-
+df_customers.write.format("json").mode("overwrite").save(folder+"/users")
+df_customers = spark.read.json(folder+"/users")
 ids = df_customers.select("id").collect()
 ids = [r["id"] for r in ids]
 
@@ -140,10 +141,9 @@ orders = orders.withColumn("id", fake_id())
 orders = orders.withColumn("transaction_date", fake_date())
 orders = orders.withColumn("item_count", F.round(F.rand()*2)+1)
 orders = orders.withColumn("amount", F.col("item_count")*F.round(F.rand()*30+10))
-orders = orders.cache()
 orders.repartition(10).write.format("json").mode("overwrite").save(folder+"/orders")
 cleanup_folder(folder+"/orders")  
-
+orders = spark.read.json(folder+"/orders")
 
 #Website interaction
 import re
@@ -156,16 +156,16 @@ fake_action = F.udf(lambda:fake.random_elements(elements=action_type, length=1)[
 fake_uri = F.udf(lambda:re.sub(r'https?:\/\/.*?\/', "https://databricks.com/", fake.uri()))
 
 
-actions = spark.createDataFrame([(i,) for i in order_user_ids], ['user_id']).repartition(20)
+actions = spark.createDataFrame([(i,) for i in action_user_ids], ['user_id']).repartition(20)
 actions = actions.withColumn("event_id", fake_id())
 actions = actions.withColumn("platform", fake_platform())
 actions = actions.withColumn("date", fake_date())
 actions = actions.withColumn("action", fake_action())
 actions = actions.withColumn("session_id", fake_id())
 actions = actions.withColumn("url", fake_uri())
-actions = actions.cache()
-actions.write.format("csv").option("header", True).mode("overwrite").save(folder+"/events")
-cleanup_folder(folder+"/events")  
+actions.repartition(20).write.format("csv").option("header", True).mode("overwrite").save(folder+"/events")
+cleanup_folder(folder+"/events")
+actions = spark.read.format('csv').option("header", True).load(folder+"/events")
 
 
 #Let's generate the Churn information. We'll fake it based on the existing data & let our ML model learn it

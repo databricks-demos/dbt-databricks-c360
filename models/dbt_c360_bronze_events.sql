@@ -5,4 +5,4 @@
 }}
 select
     *
-from stream read_files('/Volumes/{{ var("catalog") }}/{{ var("schema") }}/events', format=>'csv')
+from stream read_files('/Volumes/{{target.database}}/{{target.schema}}/raw_data/events', format=>'csv')
