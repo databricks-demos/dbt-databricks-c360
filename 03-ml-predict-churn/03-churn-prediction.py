@@ -10,9 +10,10 @@
 
 # COMMAND ----------
 
-catalog = "dbdemos"
-schema = "`dbt-retail`"
-table = "dbt_c360_gold_churn_features"
+dbutils.widgets.text("catalog", "main", "Catalog")
+dbutils.widgets.text("schema", "dbdemos_dbt_retail", "Schema")
+catalog = dbutils.widgets.get("catalog")
+schema = dbutils.widgets.get("schema")
 
 # COMMAND ----------
 
@@ -26,7 +27,7 @@ from mlflow.store.artifact.models_artifact_repo import ModelsArtifactRepository
 import mlflow.pyfunc
 
 # We'll limit to 10 000 row to accelerate the learning process
-input_pdf = spark.table(f"{catalog}.{schema}.{table}").limit(10000).toPandas()
+input_pdf = spark.table(f"{catalog}.{schema}.dbt_c360_gold_churn_features").limit(10000).toPandas()
 
 # Keep only the valuable column
 input_pdf = input_pdf.drop(
@@ -46,52 +47,46 @@ display(input_pdf)
 
 # COMMAND ----------
 
-dir_path = "/Shared/dbdemos/dbt"
-model_name = "03-churn-prediction-dbt"
-model_version_uri = f"models:/{catalog}.dbt-retail.{model_name}@Champion"
+from databricks.sdk import WorkspaceClient
+from datetime import datetime
+
+model_name = "churn-prediction-dbt"
+model_full_name = f"{catalog}.{schema}.{model_name}"
 
 mlflow.autolog(disable=False)
-#force the experiment to the field demos one. Required to launch as a batch
-def init_experiment_for_batch(path, experiment_name):
-  #You can programatically get a PAT token with the following
-  pat_token = dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
-  url = dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiUrl().get()
-  import requests
-  requests.post(f"{url}/api/2.0/workspace/mkdirs", headers = {"Accept": "application/json", "Authorization": f"Bearer {pat_token}"}, json={ "path": path})
-  xp = os.path.join(path, experiment_name)
-  print(f"Using common experiment under {xp}")
-  mlflow.set_experiment(xp)
-  
-# try:
-#   init_experiment_for_batch(dir_path, model_name)
-# except Exception as e:
-#   print("directory already exists " +str(e))
-
-model_version_uri = f"models:/{catalog}.{schema}.{model_name}@Champion"
+model_version_uri = f"models:/{model_full_name}@Champion"
+mlflow.set_registry_uri('databricks-uc')
 
 try:
     local_path = ModelsArtifactRepository(model_version_uri).download_artifacts("") # download model from remote registry
 except Exception as e:
   print("Model doesn't exist "+str(e)+", will create a automl experirement for the demo.")
 
+  from databricks import automl
+  xp_path = "/Shared/dbdemos/experiments/dbt"
+  xp_name = f"churn_prediction_dbt_{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}"
   summary = automl.classify(
-      input_pdf,
-      target_col="churn",
-      timeout_minutes=5,
-      experiment_name=model_name,
-      experiment_dir=dir_path
-  )  # Perform classification and predict churn
-
-  mlflow.set_registry_uri("databricks-uc")
+      experiment_name = xp_name,
+      experiment_dir = xp_path,
+      dataset = input_pdf,
+      target_col = "churn",
+      timeout_minutes = 5
+  )
   r = mlflow.register_model(
       model_uri=f"runs:/{summary.best_trial.mlflow_run_id}/model",
-      name=f"{catalog}.dbt-retail.{model_name}"
+      name=model_full_name
   )
   client = mlflow.tracking.MlflowClient()
-  client.set_registered_model_alias(name=f"{catalog}.dbt-retail.{model_name}", alias="Champion", version=r.version)
-  local_path = ModelsArtifactRepository(model_version_uri).download_artifacts("")
+  client.set_registered_model_alias(name=model_full_name, alias="Champion", version=r.version)
 
+# COMMAND ----------
 
+# MAGIC %md
+# MAGIC ## 3.2: Load the model as a SQL Function
+
+# COMMAND ----------
+
+local_path = ModelsArtifactRepository(model_version_uri).download_artifacts("")
 requirements_path = os.path.join(local_path, "requirements.txt")
 if not os.path.exists(requirements_path):
   dbutils.fs.put("file:" + requirements_path, "", True)
@@ -99,15 +94,6 @@ if not os.path.exists(requirements_path):
 # COMMAND ----------
 
 # MAGIC %pip install -r $requirements_path
-
-# COMMAND ----------
-
-# MAGIC %pip install jinja2==3.0.3
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ## 3.2: Load the model as a SQL Function
 
 # COMMAND ----------
 
@@ -122,7 +108,7 @@ spark.udf.register("predict_churn", predict)
 # COMMAND ----------
 
 spark.sql(f"""
-CREATE OR REPLACE TEMPORARY VIEW dbt_c360_gold_churn_predictions
+CREATE OR REPLACE TABLE {catalog}.{schema}.dbt_c360_gold_churn_predictions
 AS 
 SELECT predict_churn(struct(user_id, age_group, canal, country, gender, order_count, total_amount, total_item, platform, event_count, session_count, days_since_creation, days_since_last_activity, days_last_event)) as churn_prediction, * 
 FROM {catalog}.{schema}.dbt_c360_gold_churn_features
@@ -135,17 +121,7 @@ FROM {catalog}.{schema}.dbt_c360_gold_churn_features
 
 # COMMAND ----------
 
-display(spark.sql(f"""
-SELECT 
-  user_id,
-  platform,
-  country,
-  firstname,
-  lastname,
-  churn_prediction
-FROM {catalog}.{schema}.dbt_c360_gold_churn_predictions
-LIMIT 10;
-"""))
+display(spark.table(f"{catalog}.{schema}.dbt_c360_gold_churn_predictions"))
 
 # COMMAND ----------
 
