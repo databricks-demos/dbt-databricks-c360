@@ -10,6 +10,11 @@
 
 # COMMAND ----------
 
+# MAGIC %pip install databricks-sdk==0.36.0
+# MAGIC dbutils.library.restartPython()
+
+# COMMAND ----------
+
 dbutils.widgets.text("catalog", "main", "Catalog")
 dbutils.widgets.text("schema", "dbdemos_dbt_retail", "Schema")
 catalog = dbutils.widgets.get("catalog")
